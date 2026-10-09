@@ -3,7 +3,7 @@
 
   <xacro:macro
     name="body"
-    params="wheel_radius imu_xyz imu_rpy">
+    params="wheel_radius imu_xyz imu_rpy publish_base_footprint:=true">
 
     <joint name="base_to_body_joint" type="fixed">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
@@ -36,13 +36,17 @@
       </inertial>
     </link>
 
-    <joint name="body_to_footprint_joint" type="fixed">
-      <origin xyz="0.0 0.0 -${wheel_radius}" rpy="0.0 0.0 0.0" />
-      <parent link="body_link" />
-      <child link="base_footprint" />
-    </joint>
+    <!-- Disable when base_footprint is published as a gravity-aligned (planar) frame by the localization,
+         e.g. odom -> base_footprint -> base_link (REP-120). A fixed joint here would give it a second parent. -->
+    <xacro:if value="${publish_base_footprint}">
+      <joint name="body_to_footprint_joint" type="fixed">
+        <origin xyz="0.0 0.0 -${wheel_radius}" rpy="0.0 0.0 0.0" />
+        <parent link="body_link" />
+        <child link="base_footprint" />
+      </joint>
 
-    <link name="base_footprint" />
+      <link name="base_footprint" />
+    </xacro:if>
 
     <joint name="body_to_imu_joint" type="fixed">
       <origin xyz="${imu_xyz}" rpy="${imu_rpy}" />

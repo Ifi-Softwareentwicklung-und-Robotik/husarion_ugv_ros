@@ -154,6 +154,8 @@ def generate_launch_description():
     imu_rot_r = os.environ.get("ROBOT_IMU_ORIENTATION_R", "3.14")
     imu_rot_p = os.environ.get("ROBOT_IMU_ORIENTATION_P", "-1.57")
     imu_rot_y = os.environ.get("ROBOT_IMU_ORIENTATION_Y", "0.0")
+    # false: base_footprint is published by the localization as a gravity-aligned frame (lynx only)
+    publish_base_footprint = os.environ.get("ROBOT_PUBLISH_BASE_FOOTPRINT", "true")
     urdf_file = PythonExpression(["'", robot_model, ".urdf.xacro'"])
     robot_description_content = Command(
         [
@@ -178,6 +180,8 @@ def generate_launch_description():
             namespace,
             " components_config_path:=",
             components_config_path,
+            " publish_base_footprint:=",
+            publish_base_footprint,
         ]
     )
 
